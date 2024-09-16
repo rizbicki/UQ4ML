@@ -10,11 +10,29 @@ generate reliable prediction intervals using simulated data.
 
 The methods include:
 
-- **Bayesian Regression**: Produces intervals using posterior
-  distributions.
-- **Conformal Prediction**: Ensures prediction intervals with a given
-  confidence level.
-- **Linear Models**: Traditional frequentist approach.
+- **Linear Model**: A standard linear regression model fit using
+  ordinary least squares, with prediction intervals assuming normally
+  distributed residuals.
+
+- **Linear Model with Conformal Prediction**: A conformal approach
+  applied to the linear model’s predictions, providing intervals that
+  offer coverage guarantees without distributional assumptions.
+
+- **Bayesian Regression (Bayes)**: A Bayesian linear regression model,
+  where prediction intervals are derived from the posterior predictive
+  distribution.
+
+- **Bayesian Regression with Conformal Prediction (Bayes Conformal)**: A
+  Bayesian linear regression model combined with conformal prediction to
+  ensure valid coverage without making distributional assumptions.
+
+- **Plug-in Method**: A method that models the data using a Gaussian
+  distribution, estimating the mean and variance from the training data,
+  and generating symmetric prediction intervals.
+
+- **Oracle**: Idealized prediction intervals that assume perfect
+  knowledge of the underlying data distribution, used as a benchmark for
+  comparison.
 
 We assess performance as sample sizes change.
 

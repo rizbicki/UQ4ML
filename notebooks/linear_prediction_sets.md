@@ -2,6 +2,9 @@ Conformal Prediction vs Linear Models
 ================
 Rafael Izbicki
 
+This notebook is part of the book “Machine Learning Beyond Point
+Predictions: Uncertainty Quantification”, by Rafael Izbicki.
+
 ## Conformal Prediction and Linear Models
 
 ### Define Functions

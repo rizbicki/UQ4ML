@@ -2,6 +2,15 @@ k-NN Regression with Conformal Prediction
 ================
 Rafael Izbicki
 
+This notebook is part of the book “Machine Learning Beyond Point
+Predictions: Uncertainty Quantification”, by Rafael Izbicki.
+
+# Introduction
+
+This notebook shows how split-conformal prediction can easily be applied
+to create prediction regions with marginal coverage guarantees. We use a
+k-NN regression to provide conformal scores.
+
 ## Load the necessary libraries
 
 ``` r
