@@ -122,11 +122,11 @@ g <- ggplot() +
   # Customize theme
   theme_bw() +
   labs(title = "", x = "x", y = "y") +
-  theme(text = element_text(size = 20),
-        axis.text = element_text(size = 21),
+  theme(text = element_text(size = 14),
+        axis.text = element_text(size = 16),
         legend.key.width = unit(2, "cm"), legend.position = "none",
         strip.background = element_blank(),  # Remove grey facet boxes
-        strip.text = element_text(size = 22, face = "bold"),
+        strip.text = element_text(size = 18, face = "bold"),
         panel.spacing.x = unit(4, "lines")) +
   coord_cartesian(xlim = range(x_sparse), ylim = c(-1, 3.5))
 ```
