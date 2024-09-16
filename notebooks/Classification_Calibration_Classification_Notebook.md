@@ -234,7 +234,7 @@ ggplot(combined_calibration_data, aes(x = avg_pred, y = obs_freq)) +
   theme(axis.ticks.x = element_line(), panel.border = element_rect(color = "black"))
 ```
 
-![](Calibration_Classification_Notebook_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+![](Classification_Calibration_Classification_Notebook_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ## Metrics Comparison
 
