@@ -43,7 +43,7 @@ library(scales)
 library(isotone)
 library(tidyr)
 
-theme_set(theme_bw(base_size = 32))
+theme_set(theme_bw(base_size = 20))
 ```
 
 ## Generating Synthetic Data
