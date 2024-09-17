@@ -64,16 +64,24 @@ df <- df %>%
 
 ``` r
 ggplot() +
-  geom_line(data = df, aes(GDPercapita, previsao, group = quantile), color = "#1E88E5", size = 1.2) +
-  geom_point(data = dados, aes(x = GDPercapita, y = LifeExpectancy), size = 2, alpha = 0.5) +
-  labs(y = "Estimated Quantiles of Life Expectancy \n (10% and 90%)", group = NULL, color = NULL) +
+  geom_line(data = df %>% filter(quantile == "0.1"),
+            aes(GDPercapita, previsao, color = "10% Quantile"), size = 1.2) +
+  geom_line(data = df %>% filter(quantile == "0.9"),
+            aes(GDPercapita, previsao, color = "90% Quantile"), size = 1.2) +
+  geom_point(data = dados, aes(x = GDPercapita, y = LifeExpectancy), size = 2, alpha = .5) +
+  scale_color_manual(values = c("10% Quantile" = "#D81B60", "90% Quantile" = "#1E88E5")) +
+  labs(y = "Estimated Quantiles of Life Expectancy",
+       color = NULL,  # Remove the legend title
+       x = "GDP Per Capita ($)") +
   facet_grid(~ modelo) +
-  xlab("GDP Per Capita ($)") +
-  theme_bw(base_size = 16) +
-  theme(legend.position = "top",
+  theme_bw(base_size = 16) +  # Use theme_bw for a clean, grid-based look
+  theme(legend.position = "top",  # Place legend at the top
+        legend.text = element_text(size = 14),  # Increase legend text size
+        legend.key.size = unit(2, "cm"),  # Increase the size of legend keys
         axis.text.x = element_text(angle = 45, hjust = 1),
-        strip.background = element_blank(),
-        panel.border = element_rect(color = "black"))
+        strip.background = element_blank(),  # Remove grey facet boxes
+        panel.border = element_rect(color = "black")) +  # Keep black panel border
+  guides(color = guide_legend(override.aes = list(size = 3)))  # Increase line width in the legend
 ```
 
 ![](Quantile_Regression_Notebook_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
