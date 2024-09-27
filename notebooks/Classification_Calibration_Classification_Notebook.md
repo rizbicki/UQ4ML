@@ -1,7 +1,10 @@
 Calibration Methods: Logistic Regression
 ================
 Rafael Izbicki
-2024-09-16
+2024-09-27
+
+This notebook is part of the book “Machine Learning Beyond Point
+Predictions: Uncertainty Quantification”, by Rafael Izbicki.
 
 ## Introduction
 
@@ -268,3 +271,117 @@ metrics
     ## 3               Platt 0.09583970 0.2245802   0.1985179 0.5747163
     ## 4   Histogram Binning 0.00000000 0.0000000   0.1855200 0.5308441
     ## 5 Temperature Scaling 0.08100132 0.2031896   0.1956683 0.5669911
+
+To construct new calibration plots and recompute the metrics using a
+new, independent testing set, I will modify the notebook accordingly.
+Here’s how the changes should look:
+
+### Add Independent Testing Data
+
+First, I’ll generate a new independent testing dataset to simulate the
+model’s performance on unseen data.
+
+``` r
+# Generate testing data
+set.seed(789)
+n_test <- 2000
+x_test <- rnorm(n_test)
+y_test <- rbinom(n_test, size = 1, prob = exp(a * x_test^transf) / (1 + exp(a * x_test^transf)))
+```
+
+### Update the Model to Predict on the Testing Set
+
+Then, use the logistic regression model trained earlier to predict on
+the testing set:
+
+``` r
+# Predict probabilities on the testing set
+pred_probs_test <- predict(model, newdata = data.frame(x_train = x_test), type = "response")
+```
+
+### Apply Calibration Methods to the Testing Set
+
+Now, recalibrate the predictions using the independent testing set for
+all calibration methods (Isotonic, Platt, Histogram Binning, and
+Temperature Scaling):
+
+``` r
+# Apply isotonic regression on the testing set
+iso_preds_test <- isoreg(pred_probs_test)$yf
+
+# Apply Platt scaling on the testing set
+platt_preds_test <- plogis(predict(platt_model, newdata = data.frame(pred_probs = pred_probs_test)))
+
+# Apply histogram binning on the testing set
+histogram_binning_preds_test <- histogram_binning(pred_probs_test, y_test, bin_breaks)
+
+# Apply temperature scaling on the testing set
+logits_test <- qlogis(pred_probs_test)
+temp_scaling_preds_test <- temperature_scaling(logits_test, best_temp)
+```
+
+### Recompute Metrics for the Testing Set
+
+Recompute the calibration metrics (ECE, MCE, Brier score, Log Loss)
+using the new testing set:
+
+``` r
+# Calculate metrics for each method using the testing set
+metrics_test <- do.call(rbind, lapply(names(calibration_methods), function(method) {
+  recalibrated_preds <- switch(method,
+                               "Before Calibration" = pred_probs_test,
+                               "Isotonic" = iso_preds_test,
+                               "Platt" = platt_preds_test,
+                               "Histogram Binning" = histogram_binning_preds_test,
+                               "Temperature Scaling" = temp_scaling_preds_test)
+  
+  result <- compute_calibration(y_test, recalibrated_preds, bin_breaks, method)
+  brier <- brier_score(y_test, recalibrated_preds)
+  logloss <- log_loss(y_test, recalibrated_preds)
+  data.frame(Method = method, ECE = result$ece, MCE = result$mce, Brier_Score = brier, Log_Loss = logloss)
+}))
+
+# Display metrics for the testing set
+metrics_test
+```
+
+    ##                Method        ECE        MCE Brier_Score  Log_Loss
+    ## 1  Before Calibration 0.09575172 0.18258158   0.1990203 0.5728116
+    ## 2            Isotonic 0.01986173 0.08626563   0.2498712 0.6928871
+    ## 3               Platt 0.09444923 0.22549573   0.2019378 0.5825230
+    ## 4   Histogram Binning 0.00000000 0.00000000   0.1873482 0.5361429
+    ## 5 Temperature Scaling 0.09049576 0.16407995   0.1984187 0.5732207
+
+### Update the Calibration Plot for the Testing Set
+
+Lastly, generate new calibration plots based on the recalibrated models
+and the independent testing set:
+
+``` r
+# Combine calibration data for the testing set
+calibration_methods_test <- list(
+  "Before Calibration" = as.numeric(pred_probs_test),
+  "Isotonic" = as.numeric(iso_preds_test),
+  "Platt" = as.numeric(platt_preds_test),
+  "Histogram Binning" = as.numeric(histogram_binning_preds_test),
+  "Temperature Scaling" = as.numeric(temp_scaling_preds_test)
+)
+
+calibration_results_test <- lapply(names(calibration_methods_test), function(method) {
+  compute_calibration(y_test, calibration_methods_test[[method]], bin_breaks, method)
+})
+
+# Combine all calibration data for the testing set
+combined_calibration_data_test <- do.call(rbind, lapply(calibration_results_test, `[[`, "data"))
+
+# Plot calibration curves for the testing set
+ggplot(combined_calibration_data_test, aes(x = avg_pred, y = obs_freq)) +
+  geom_point(size = 3) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "#D81B60", linewidth = 1.2) +
+  xlim(0, 1) + ylim(0, 1) +
+  labs(x = "Estimated Probability", y = "Observed Frequency") +
+  facet_wrap(~method, ncol = 3, scales = "fixed", strip.position = "top") +
+  theme(axis.ticks.x = element_line(), panel.border = element_rect(color = "black"))
+```
+
+![](Classification_Calibration_Classification_Notebook_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
