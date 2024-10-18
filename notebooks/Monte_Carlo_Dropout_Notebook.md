@@ -6,9 +6,6 @@ Rafael Izbicki
 This notebook is part of the book “Machine Learning Beyond Point
 Predictions: Uncertainty Quantification”, by Rafael Izbicki.
 
-Here is the R Markdown document formatted with explanations and an
-introduction:
-
 # Introduction
 
 In this document, we explore the implementation of Monte Carlo (MC)
