@@ -8,12 +8,11 @@ Predictions: Uncertainty Quantification”, by Rafael Izbicki.
 # Introduction
 
 In this analysis, we explore how Gaussian Processes (GPs) with varying
-bandwidth parameters (also known as length-scale or smoothness) affect
-prediction sets. Specifically, we generate a dataset with two dense
-regions and a sparse region in between. We then fit three different GPs
-to this dataset, each with a different bandwidth parameter, and
-visualize how the predictions and uncertainty bounds vary across these
-models.
+correlation parameters affect prediction sets. Specifically, we generate
+a dataset with two dense regions and a sparse region in between. We then
+fit three different GPs to this dataset, each with a different
+correlation parameter, and visualize how the predictions and uncertainty
+bounds vary across these models.
 
 # Load necessary libraries
 
@@ -50,16 +49,49 @@ y_dense <- true_function(x_sparse)
 data <- data.frame(x = x_sparse, y = y_dense)
 ```
 
-# Fit Gaussian Processes with varying bandwidths
+# Fit Gaussian Processes with varying correlations
 
 ``` r
 # Prepare the data for GP fitting
 X_mat <- matrix(data$x, ncol = 1)
 
-# Fit three different GPs with varying bandwidths (theta)
-gp1 <- gpkm(X_mat, data$y, normalize = TRUE, kernel = k_Gaussian(s2=0.1,D=1,s2_lower = 0.1,s2_upper = 0.1))   # GP with smaller bandwidth
-gp2 <- gpkm(X_mat, data$y, normalize = TRUE, kernel = k_Gaussian(s2=1,D=1,s2_lower = 1,s2_upper = 1))   # GP with moderate bandwidth
-gp3 <- gpkm(X_mat, data$y, normalize = TRUE, kernel = k_Gaussian(s2=10,D=1,s2_lower = 10,s2_upper = 10))     # GP with larger bandwidth
+# Function to calculate beta from desired correlation and distance
+calculate_beta <- function(rho, h) {
+  theta <- -log(rho) / h^2
+  beta <- log(theta)
+  return(beta)
+}
+
+# GP with correlation of 0.1 at distance h = 1
+rho1 <- 0.1
+h <- 1
+beta1 <- calculate_beta(rho1, h)
+
+gp1 <- gpkm(X_mat, data$y,  
+            normalize = TRUE, 
+            kernel = Gaussian$new(s2 = 1, beta = beta1, D = 1, 
+                                  beta_lower = beta1, beta_upper = beta1, 
+                                  s2_lower = 1, s2_upper = 1))  # Variance fixed to 1
+
+# GP with correlation of 0.6 at distance h = 1
+rho2 <- 0.6
+beta2 <- calculate_beta(rho2, h)
+
+gp2 <- gpkm(X_mat, data$y,  
+            normalize = TRUE, 
+            kernel = Gaussian$new(s2 = 1, beta = beta2, D = 1, 
+                                  beta_lower = beta2, beta_upper = beta2, 
+                                  s2_lower = 1, s2_upper = 1))  # Variance fixed to 1
+
+# GP with correlation of 0.9 at distance h = 1
+rho3 <- 0.9
+beta3 <- calculate_beta(rho3, h)
+
+gp3 <- gpkm(X_mat, data$y,  
+            normalize = TRUE, 
+            kernel = Gaussian$new(s2 = 1, beta = beta3, D = 1, 
+                                  beta_lower = beta3, beta_upper = beta3, 
+                                  s2_lower = 1, s2_upper = 1))  # Variance fixed to 1
 ```
 
 # Make predictions and plot the results
@@ -84,7 +116,9 @@ predictions_combined <- data.frame(
   upper_bound = c(pred1$mean + 1.96 * sqrt(pred1$s2), 
                   pred2$mean + 1.96 * sqrt(pred2$s2), 
                   pred3$mean + 1.96 * sqrt(pred3$s2)),
-  model = factor(rep(c("Bandwidth: 0.1", "Bandwidth: 1", "Bandwidth: 10"), each = length(x_grid)))
+  model = factor(rep(c("Correlation: 0.1", 
+                                           "Correlation: 0.6", 
+                                           "Correlation: 0.9"), each = length(x_grid)))
 )
 ```
 
@@ -92,9 +126,9 @@ predictions_combined <- data.frame(
 
 ``` r
 # Define the custom colors
-custom_colors <- c("Bandwidth: 0.1" = "#44CA2E", 
-                   "Bandwidth: 1" = "#1E88E5", 
-                   "Bandwidth: 10" = "#D81B60")
+custom_colors <- c("Correlation: 0.1" = "#44CA2E", 
+                   "Correlation: 0.6" = "#1E88E5", 
+                   "Correlation: 0.9" = "#D81B60")
 
 # Plot with facets and updated facet labels showing bandwidth values
 g <- ggplot() +
