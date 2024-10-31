@@ -102,20 +102,20 @@ x_grid <- seq(min(x_sparse), max(x_sparse), length.out = 200)
 X_new_mat <- matrix(x_grid, ncol = 1)
 
 # Predictions for each model
-pred1 <- predict(gp1, XX = X_new_mat, se.fit = TRUE)
-pred2 <- predict(gp2, XX = X_new_mat, se.fit = TRUE)
-pred3 <- predict(gp3, XX = X_new_mat, se.fit = TRUE)
+pred1 <- gp1$pred(XX = X_new_mat, se = TRUE,mean_dist = T)
+pred2 <- gp2$pred(XX = X_new_mat, se = TRUE,mean_dist = T)
+pred3 <- gp3$pred(XX = X_new_mat, se = TRUE,mean_dist = T)
 
 # Combine the predictions into a single dataframe
 predictions_combined <- data.frame(
   x_grid = rep(x_grid, 3),
   pred_mean = c(pred1$mean, pred2$mean, pred3$mean),
-  lower_bound = c(pred1$mean - 1.96 * sqrt(pred1$s2), 
-                  pred2$mean - 1.96 * sqrt(pred2$s2), 
-                  pred3$mean - 1.96 * sqrt(pred3$s2)),
-  upper_bound = c(pred1$mean + 1.96 * sqrt(pred1$s2), 
-                  pred2$mean + 1.96 * sqrt(pred2$s2), 
-                  pred3$mean + 1.96 * sqrt(pred3$s2)),
+  lower_bound = c(pred1$mean - 1.96 * (pred1$s2), 
+                  pred2$mean - 1.96 * (pred2$s2), 
+                  pred3$mean - 1.96 * (pred3$s2)),
+  upper_bound = c(pred1$mean + 1.96 * (pred1$s2), 
+                  pred2$mean + 1.96 * (pred2$s2), 
+                  pred3$mean + 1.96 * (pred3$s2)),
   model = factor(rep(c("Correlation: 0.1", 
                                            "Correlation: 0.6", 
                                            "Correlation: 0.9"), each = length(x_grid)))

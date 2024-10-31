@@ -2,6 +2,16 @@ Gaussian Process
 ================
 Rafael Izbicki
 
+This notebook is part of the book “Machine Learning Beyond Point
+Predictions: Uncertainty Quantification”, by Rafael Izbicki.
+
+# Introduction
+
+This notebook demonstrates how Gaussian processes (GP) can be used to
+model data and quantify uncertainty. Using simulated data, it fits a GP
+model and visualizes the results, highlighting both total and epistemic
+uncertainty through credible/prediction intervals.
+
 ## Load Necessary Packages
 
 ``` r
@@ -50,7 +60,7 @@ predictions <- predict(gp, XX = X_new_mat, se.fit = TRUE)
 
 # Extract means and standard deviations for prediction intervals
 means <- predictions$mean
-std_dev <- sqrt(predictions$se)
+std_dev <- predictions$se
 lower_bound <- means - 1.96 * std_dev
 upper_bound <- means + 1.96 * std_dev
 ```
@@ -74,7 +84,7 @@ ggplot() +
 
 ![](Gaussian_Process_Notebook_files/figure-gfm/plot-results-1.png)<!-- -->
 
-## Epstemic Uncertainty
+## Epistemic Uncertainty
 
 ``` r
 # Alternative predictions with mean distance
@@ -82,7 +92,7 @@ predictions <- gp$pred(XX = X_new_mat, se = TRUE, mean_dist = TRUE)
 
 # Extract means and standard deviations
 means <- predictions$mean
-std_dev <- sqrt(predictions$s2)
+std_dev <- predictions$se
 lower_bound <- means - 1.96 * std_dev
 upper_bound <- means + 1.96 * std_dev
 ```
