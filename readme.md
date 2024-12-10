@@ -1,3 +1,3 @@
 This is the github repository for the book *Machine Learning Learning Beyond Point Predictions: Uncertainty Quantification*  
 
-(https://rafaelizbicki.com/uq4ml)[Chck the book here]
+(Check the book here)[https://rafaelizbicki.com/uq4ml]
