@@ -3,5 +3,5 @@ This is the github repository for the book **Machine Learning Learning Beyond Po
 [Check the book here](https://rafaelizbicki.com/uq4ml)
 
 <a href="https://rafaelizbicki.com/uq4ml">
-  <img src="cover.jpg" alt="Cover" style="height: 50%;">
+  <img src="cover.jpg" alt="Cover" style="height: 10%;">
 </a>
