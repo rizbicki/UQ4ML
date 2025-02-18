@@ -5,6 +5,15 @@ Rafael Izbicki
 This notebook is part of the book “Machine Learning Beyond Point
 Predictions: Uncertainty Quantification”, by Rafael Izbicki.
 
+``` r
+library(tidyverse)
+library(scales)
+library(ggthemes)
+library(quantreg)
+library(ranger)
+library(gbm)
+```
+
 ## Introduction
 
 In this analysis, we explore the relationship between Life Expectancy
